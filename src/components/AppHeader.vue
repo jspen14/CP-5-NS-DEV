@@ -16,6 +16,7 @@
         <div id="login" class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
             <router-link to="/profile">Profile &nbsp &nbsp </router-link>
             <button type="button" class="btn btn-primary">Login</button>
+            <router-link to="/signUp"><button type="button" class="btn btn-primary">Sign-Up</button> </router-link>
         </div>
 
     </div>
