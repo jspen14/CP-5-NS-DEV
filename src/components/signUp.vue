@@ -205,6 +205,8 @@
         salesCompany: this.salesCompany, sports: this.sports,
         major: this.major, name: this.name});
 
+        location.replace("Newsfeed.vue#/newsfeed")
+
       }
 
      }

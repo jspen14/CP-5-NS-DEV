@@ -30,7 +30,8 @@ app.post('/api/login', (req, res) => {
     return [bcrypt.compare(req.body.password, user.hash),user];
   }).spread((result,user) => {
     if (result)
-      res.status(200).json({user:{username:user.username,name:user.name, user_id:user.user_id}});
+      res.status(200).json({user:{username:user.username,name:user.name, user_id:user.user_id, age:user.age, hometown:user.hometown, salesCompany:user.salesCompany,
+        sports:user.sports, major:user.major}});
     else
       res.status(403).send("Invalid credentials");
     return;
@@ -61,7 +62,7 @@ app.post('/api/users', (req, res) => {
     return knex('users').insert({email: req.body.email, hash: hash, username:req.body.username, age:req.body.age, hometown:req.body.hometown, salesCompany:req.body.salesCompany, sports:req.body.sports, major:req.body.major,
 				 name:req.body.name});//see if the order matters
   }).then(ids => {
-    return knex('users').where('user_id',ids[0]).first().select('username','name','user_id'); // This might be user-ids[]
+    return knex('users').where('user_id',ids[0]).first().select('username','name','user_id', 'age'); // This might be user-ids[]
   }).then(user => {
     res.status(200).json({user:user});
     return;
@@ -74,13 +75,14 @@ app.post('/api/users', (req, res) => {
 });
 
 app.post('/api/users/:id/posts', (req, res) => {
-  let id = parseInt(req.params.id);
-  knex('users').where('id',id).first().then(user => {
-    return knex('posts').insert({user_id: id, post:req.body.post, dateCreated: new Date()});
+  let id = parseInt(req.body.user_id); // might need to be req.params.user_id
+  knex('users').where('user_id',id).first().then(user => {
+    return knex('posts').insert({user_id: id, post:req.body.post, dateCreated: new Date(), username: req.body.username});
   }).then(ids => { // might be post_ids
     return knex('posts').where('post_id',ids[0]).first();
   }).then(post => {
     res.status(200).json({post:post});
+    console.log(post);
     return;
   }).catch(error => {
     console.log(error);
@@ -88,8 +90,32 @@ app.post('/api/users/:id/posts', (req, res) => {
   });
 });
 
-app.get('/api/comments', (req, res) => {
-  res.send(comments);
+
+//
+// app.get('/api/comments', (req, res) => {
+//   res.send(comments);
+// });
+
+// app.get('/api/users/:id', (req, res) => {
+//   let id = parseInt(req.params.id);
+//   knex('users').where('users.id', id).select('user_id','email','username',
+//   'name','age','hometown','salesCompany','sports',
+//   'major').then(users => {res.status(200).json({users:users});
+// }).catch(error => {
+//     res.status(500).json({ error });
+// });
+// });
+
+app.get('/api/posts' , (req, res) => {
+  return knex('posts').select('post_id','post','dateCreated','user_id','username')
+    .then(posts => {
+      //console.log(posts);
+      res.status(200).json({posts:posts});
+    }).catch(error => {
+      console.log(error);
+      res.status(500).json({error});
+    });
+
 });
 
 app.put('/api/comments/:id', (req, res) => {

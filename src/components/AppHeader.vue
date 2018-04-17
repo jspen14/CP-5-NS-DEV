@@ -14,9 +14,14 @@
         </div>
 
         <div id="login" class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-            <router-link to="/profile">Profile &nbsp &nbsp </router-link>
-            <button type="button" class="btn btn-primary">Login</button>
+        <div v-if="loggedIn">
+            <router-link to="/profile"> {{user.username}} </router-link>
+            <button v-on:click="logout" type="button" class="btn btn-danger">Logout</button>
+        </div>
+        <div v-if="!loggedIn">
+            <router-link to="/Login"><button type="button" class="btn btn-primary">Login</button> </router-link>
             <router-link to="/signUp"><button type="button" class="btn btn-primary">Sign-Up</button> </router-link>
+        </div>
         </div>
 
     </div>
@@ -28,7 +33,46 @@
 
 <script>
  export default {
-     name: 'AppHeader'
+   name: 'AppHeader',
+   data () {
+     return {
+       keywords: '',
+       email: '',
+       password: '',
+     }
+   },
+   computed: {
+     user: function() {
+
+      //console.log(this.$store.getters.user);
+       return this.$store.getters.user;
+     },
+     loggedIn: function() {
+       return this.$store.getters.loggedIn;
+     },
+     loginError: function() {
+       return this.$store.getters.loginError;
+     },
+   },
+   methods: {
+     search: function() {
+       this.$router.push({ path: '/search', query: { keywords: this.keywords }})
+       this.keywords = '';
+     },
+     login: function() {
+       this.$store.dispatch('login',{
+         email: this.email,
+         password: this.password,
+       }).then(user => {
+	       this.email = '';
+	       this.password = '';
+       });
+     },
+     logout: function() {
+       this.$store.dispatch('logout');
+       location.replace("HomePage.vue");
+     }
+   }
  }
 </script>
 

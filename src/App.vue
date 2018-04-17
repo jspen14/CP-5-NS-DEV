@@ -6,7 +6,7 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="background-color: #1E8BFF">
-          <a style="color: white " href="https://github.com/jspen14/cp-4-NS-DEV.git">GitHub</a>
+          <a style="color: white " href="https://github.com/jspen14/CP-5-NS-DEV.git">GitHub</a>
           </div>
         </div>
       </div>
