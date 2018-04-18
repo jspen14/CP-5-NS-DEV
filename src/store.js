@@ -42,9 +42,9 @@ export default new Vuex.Store({
       state.user = user;
       //console.log(this.state.user);
     },
-    // setLogin (state, status) {
-    //   state.loggedIn = status;
-    // },
+    setLogin (state, status) {
+      state.loggedIn = status;
+    },
     setToken (state, token) {
       state.token = token;
       if (token === '')
@@ -55,6 +55,7 @@ export default new Vuex.Store({
     setAge (state, age){
       state.age = age;
     },
+
     setLoginError (state, message) {
       state.loginError = message;
     },
@@ -114,7 +115,7 @@ export default new Vuex.Store({
       console.log("s");
       axios.post("/api/login",user).then(response => {
       	context.commit('setUser', response.data.user);
-      	//context.commit('setLogin',true);
+      	context.commit('setLogin',true);
         context.commit('setToken',response.data.token);
       	context.commit('setRegisterError',"");
       	context.commit('setLoginError',"");

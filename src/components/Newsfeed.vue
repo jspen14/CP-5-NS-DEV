@@ -12,19 +12,19 @@
 
       <div class="row" >
 
-          <!--<div class="row" v-if="!loggedIn" >
-            <h5> &nbsp  Login to Post!</h5>
+          <div class="row" v-if="!loggedIn" >
+            <h3> &nbsp  Login to view Feed!</h3>
           </div>
-          -->
 
-          <form v-on:submit.prevent="addComment">
           <div v-if="loggedIn">
-              <input v-model="text" placeholder="What's on your mind?" class="form-control" style="min-width: 30vw; min-height: 6vh; font-size: 3vh"><br>
-                  <button type="button submit" class="btn btn-lg btn-primary" style="float:left"> Post</button>
-          </div>
-          <button v-on:click = "getPosts" class="btn btn-lg btn-primary" style="float:right"> Show Feed</button>
-          </form>
+            <form v-on:submit.prevent="addComment">
 
+                <input v-model="text" placeholder="What's on your mind?" class="form-control" style="min-width: 30vw; min-height: 6vh; font-size: 3vh"><br>
+                    <button type="button submit" class="btn btn-lg btn-primary" style="float:left"> Post</button>
+
+            <button v-on:click = "getPosts" class="btn btn-lg btn-warning" style="float:right"> Show Feed</button>
+            </form>
+          </div>
       </div>
 
 
@@ -156,8 +156,11 @@ import axios from 'axios';
     },
     posts: function() {
       //var hey = this.dummy.length;
-      console.log(this.$store.getters.post_feed);
-      return this.$store.getters.post_feed;
+      //console.log(this.$store.getters.post_feed);
+      this.postsArray = this.$store.getters.post_feed.slice();
+      const result = this.postsArray.filter(user => user.post != '');
+      console.log(result);
+      return result;
     },
    },
    created: function(){

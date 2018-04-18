@@ -9,7 +9,9 @@
 
         <router-link to="/">Home</router-link>
 
-        <router-link to="/newsfeed">&nbsp Newsfeed</router-link>
+        <div v-if="loggedIn">
+          <router-link to="/newsfeed"> Newsfeed</router-link>
+          </div>
 
         </div>
 

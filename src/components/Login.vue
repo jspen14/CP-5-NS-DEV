@@ -48,7 +48,12 @@
                   <div class="col-lg-3 col-md-3"></div>
                   <div class="col-lg-6 col-md-6" style="text-align:center">
                         <button type="submit" class="btn btn-success"><i class="fa fa-sign-in"></i> Login</button>
+
+                          <router-link to="/newsfeed"><button v-show="loggedIn" style="float:right" class="btn btn-warning"><i class="fa fa-sign-in"></i> Go To Feed</button></router-link>
+
+
                   </div>
+
               </div>
 
 
@@ -65,12 +70,18 @@
           password: '',
     	 }
      },
+     computed:{
+       loggedIn: function() {
+         return this.$store.getters.loggedIn;
+       },
+     },
      methods:{
-      login: function(){
-        this.$store.dispatch('login', {email: this.email, password: this.password})
-          .then(location.replace("Newsfeed.vue#/newsfeed"));
+        login: function(){
+        console.log(this.$store.getters.loggedIn);
+          this.$store.dispatch('login', {email: this.email, password: this.password});
 
-      }
+        },
+
 
      }
  }

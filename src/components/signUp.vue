@@ -173,8 +173,12 @@
       <!-- Start of sign_up buuton !-->
       <div class="row">
           <div class="col-md-3"></div>
-          <div class="col-md-6">
-              <button type="submit" class="btn btn-success"><i class="fa fa-user-plus"></i> Sign-Up</button>
+          <div class="col-lg-6 col-md-6" style="text-align:center">
+                <button type="submit" class="btn btn-success"><i class="fa fa-sign-in"></i> Sign-Up</button>
+
+                <router-link to="/newsfeed"><button v-show="loggedIn" style="float:right" class="btn btn-warning"><i class="fa fa-sign-in"></i> Go To Feed</button></router-link>
+
+
           </div>
       </div>
   </form>
@@ -198,6 +202,11 @@
 
     	 }
      },
+     computed:{
+       loggedIn: function() {
+         return this.$store.getters.loggedIn;
+       },
+      },
      methods:{
       register: function(){
         this.$store.dispatch('register', {email: this.email, password: this.password,
@@ -205,7 +214,7 @@
         salesCompany: this.salesCompany, sports: this.sports,
         major: this.major, name: this.name});
 
-        location.replace("Newsfeed.vue#/newsfeed")
+      
 
       }
 
