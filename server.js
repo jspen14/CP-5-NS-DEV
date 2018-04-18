@@ -14,7 +14,32 @@ const knex = require('knex')(config);
 
 // bcrypt setup
 let bcrypt = require('bcrypt');
-const saltRounds = 10;
+const saltRounds = 10
+
+// jwt setup
+const jwt = require('jsonwebtoken');
+let jwtSecret = process.env.jwtSecret;
+if (jwtSecret === undefined) {
+  console.log("You need to define a jwtSecret environment variable to continue.");
+  knex.destroy();
+  process.exit();
+}
+
+// Verify the token that a client gives us.
+// This is setup as middleware, so it can be passed as an additional argument to Express after
+// the URL in any route. This will restrict access to only those clients who possess a valid token.
+const verifyToken = (req, res, next) => {
+  const token = req.headers['authorization'];
+  if (!token)
+    return res.status(403).send({ error: 'No token provided.' });
+  jwt.verify(token, jwtSecret, function(err, decoded) {
+    if (err)
+      return res.status(500).send({ error: 'Failed to authenticate token.' });
+    // if everything good, save to request for use in other routes
+    req.userID = decoded.id;
+    next();
+  });
+}
 
 let comments = [];
 let id = 0;
@@ -29,11 +54,20 @@ app.post('/api/login', (req, res) => {
     }
     return [bcrypt.compare(req.body.password, user.hash),user];
   }).spread((result,user) => {
-    if (result)
-      res.status(200).json({user:{username:user.username,name:user.name, user_id:user.user_id, age:user.age, hometown:user.hometown, salesCompany:user.salesCompany,
-        sports:user.sports, major:user.major}});
-    else
-      res.status(403).send("Invalid credentials");
+    if (result) {
+     let token = jwt.sign({ id: user.id }, jwtSecret, {
+      expiresIn: 86400 // expires in 24 hours
+      });
+      res.status(200).json({user:{username:user.username,name:user.name, user_id:user.user_id, age:user.age,
+        hometown:user.hometown, salesCompany:user.salesCompany, sports:user.sports, major:user.major}});
+    } else {
+       res.status(403).send("Invalid credentials");
+    }
+    // if (result)
+    //   res.status(200).json({user:{username:user.username,name:user.name, user_id:user.user_id, age:user.age, hometown:user.hometown, salesCompany:user.salesCompany,
+    //     sports:user.sports, major:user.major}});
+    // else
+    //   res.status(403).send("Invalid credentials");
     return;
   }).catch(error => {
     if (error.message !== 'abort') {
@@ -64,7 +98,11 @@ app.post('/api/users', (req, res) => {
   }).then(ids => {
     return knex('users').where('user_id',ids[0]).first().select('username','name','user_id', 'age'); // This might be user-ids[]
   }).then(user => {
-    res.status(200).json({user:user});
+    //res.status(200).json({user:user});
+    let token = jwt.sign({ id: user.id }, jwtSecret, {
+      expiresIn: 86400 // expires in 24 hours
+    });
+     res.status(200).json({user:user,token:token});
     return;
   }).catch(error => {
     if (error.message !== 'abort') {
@@ -74,6 +112,8 @@ app.post('/api/users', (req, res) => {
   });
 });
 
+// app.post('/api/users/:id/posts', (req, res) => {
+//   let id = parseInt(req.body.user_id); // might need to be req.params.user_id
 app.post('/api/users/:id/posts', (req, res) => {
   let id = parseInt(req.body.user_id); // might need to be req.params.user_id
   knex('users').where('user_id',id).first().then(user => {
@@ -95,16 +135,28 @@ app.post('/api/users/:id/posts', (req, res) => {
 // app.get('/api/comments', (req, res) => {
 //   res.send(comments);
 // });
+  // Users //
 
-// app.get('/api/users/:id', (req, res) => {
-//   let id = parseInt(req.params.id);
-//   knex('users').where('users.id', id).select('user_id','email','username',
-//   'name','age','hometown','salesCompany','sports',
-//   'major').then(users => {res.status(200).json({users:users});
-// }).catch(error => {
-//     res.status(500).json({ error });
-// });
-// });
+  // Get my account
+  app.get('/api/me', verifyToken, (req,res) => {
+    knex('users').where('id',req.userID).first().select('user_id','email','username',
+    'name','age','hometown','salesCompany','sports',
+    'major').then(user => {
+      res.status(200).json({user:user});
+    }).catch(error => {
+      res.status(500).json({ error });
+    });
+  });
+
+app.get('/api/users/:id', (req, res) => {
+  let id = parseInt(req.params.id);
+  knex('users').where('users.id', id).select('user_id','email','username',
+  'name','age','hometown','salesCompany','sports',
+  'major').then(users => {res.status(200).json({users:users});
+}).catch(error => {
+    res.status(500).json({ error });
+});
+});
 
 app.get('/api/posts' , (req, res) => {
   return knex('posts').select('post_id','post','dateCreated','user_id','username')
@@ -117,6 +169,12 @@ app.get('/api/posts' , (req, res) => {
     });
 
 });
+
+// app.put('/api/dummy', (req,res) => {
+//   let dummy_var = mathRandom();
+//   knex('posts').where('post_id', '=', 1).update({dummy:dummy_var});
+//   return dummy_var;
+// });
 
 app.put('/api/comments/:id', (req, res) => {
   let id = parseInt(req.params.id);
@@ -131,13 +189,13 @@ app.put('/api/comments/:id', (req, res) => {
   res.send(comment);
 });
 
-app.post('/api/comments', (req, res) => {
-  id = id + 1;
-  let comment = {id:id, username:req.body.username, text:req.body.text, likes:req.body.likes, date:req.body.date, sorted:req.body.sorted}; // this is where we will add the number of likes
-
-  comments.push(comment);
-  res.send(comment);
-});
+// app.post('/api/comments', (req, res) => {
+//   id = id + 1;
+//   let comment = {id:id, username:req.body.username, text:req.body.text, likes:req.body.likes, date:req.body.date, sorted:req.body.sorted}; // this is where we will add the number of likes
+//
+//   comments.push(comment);
+//   res.send(comment);
+// });
 
 app.delete('/api/comments/:id', (req, res) => {
   let id = parseInt(req.params.id);

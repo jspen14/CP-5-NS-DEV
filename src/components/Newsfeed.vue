@@ -1,4 +1,4 @@
-<template onload="getPosts()">
+<template >
   <div class="container">
     <div>
       <a target="_top"><img src="https://blog.flamingtext.com/blog/2018/03/01/flamingtext_com_1519939719_856800845.png" border="0" alt="Logo Design by FlamingText.com" title="Logo Design by FlamingText.com"></a>
@@ -10,23 +10,28 @@
 
       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" >
 
-      <div class="row" v-if="loggedIn">
+      <div class="row" >
 
-        <form v-on:submit.prevent="addComment">
+          <!--<div class="row" v-if="!loggedIn" >
+            <h5> &nbsp  Login to Post!</h5>
+          </div>
+          -->
 
-            <input v-model="text" placeholder="What's on your mind?" class="form-control" style="min-width: 30vw; min-height: 6vh; font-size: 3vh"><br>
-                <button type="button submit" class="btn btn-lg btn-primary" style="float:left"> Post</button>
-                <!--<button v-on:click = "posts()" class="btn btn-lg btn-primary" style="float:right"> Show Feed</button>-->
-        </form>
+          <form v-on:submit.prevent="addComment">
+          <div v-if="loggedIn">
+              <input v-model="text" placeholder="What's on your mind?" class="form-control" style="min-width: 30vw; min-height: 6vh; font-size: 3vh"><br>
+                  <button type="button submit" class="btn btn-lg btn-primary" style="float:left"> Post</button>
+          </div>
+          <button v-on:click = "getPosts" class="btn btn-lg btn-primary" style="float:right"> Show Feed</button>
+          </form>
+
       </div>
 
-      <div class="row" v-if="!loggedIn" >
-        <h5> &nbsp  Login to Post!</h5>
-      </div>
+
 
       <div v-for="post in posts" style="text-align: left; word-wrap: break-word;">
               <hr>
-          	  <h3><div style="text-align: left">{{ post.username }}: {{post.post}}</div> <div></div></h3>
+          	  <h3><div style="text-align: left">{{ post.username }}: {{ post.post }}</div> <div></div></h3>
               <!--<h5> {{ post.dateCreated }} </h5>-->
               <!--
               <button type="button" class="btn btn-outline-primary" v-on:click ="addLike(comment)">Likes: {{comment.likes}}</button>
@@ -74,6 +79,7 @@ import axios from 'axios';
    data () {
      return {
       comments: [],
+      postsArray: [],
       text: '',
       username: '',
       date: '',
@@ -81,7 +87,7 @@ import axios from 'axios';
       thisNum: 0,
       sorted: false,
       i: 0,
-      dummy: [],
+      //dummy: [],
      }
    },
    computed: {
@@ -141,7 +147,7 @@ import axios from 'axios';
       }
     },
     loggedIn: function() {
-      this.dummy.push(5);
+      //this.dummy.push(5);
       return this.$store.getters.loggedIn;
     },
     user: function() {
@@ -149,7 +155,7 @@ import axios from 'axios';
       return this.$store.getters.user;
     },
     posts: function() {
-      var hey = this.dummy.length;
+      //var hey = this.dummy.length;
       console.log(this.$store.getters.post_feed);
       return this.$store.getters.post_feed;
     },
@@ -158,9 +164,10 @@ import axios from 'axios';
     this.getPosts();
    },
    methods:{
+
      getPosts: function() {
 
-        return this.$store.getters.post_feed;
+        return this.$store.dispatch();
 
        },
        getDate: function() {
