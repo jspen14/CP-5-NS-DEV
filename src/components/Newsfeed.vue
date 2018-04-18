@@ -90,6 +90,29 @@ import axios from 'axios';
       //dummy: [],
      }
    },
+   filters: {
+      since: function(datetime) {
+        moment.locale('en', {
+          relativeTime: {
+            future: 'in %s',
+            past: '%s',
+            s:  'seconds',
+            ss: '%ss',
+            m:  '1m',
+            mm: '%dm',
+            h:  'h',
+            hh: '%dh',
+            d:  'd',
+            dd: '%dd',
+            M:  ' month',
+            MM: '%dM',
+            y:  'a year',
+            yy: '%dY'
+          }
+      });
+      return moment(datetime).fromNow();
+    },
+  },
    computed: {
     sortedItems: function() {
       //console.log(this.comments);
