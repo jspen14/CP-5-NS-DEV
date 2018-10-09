@@ -5,7 +5,7 @@ import Profile from '@/components/Profile'
 import Newsfeed from '@/components/Newsfeed'
 import SignUp from '@/components/signUp'
 import Login from'@/components/Login'
-
+import Update from '@/components/Update'
 Vue.use(Router)
 
 export default new Router({
@@ -34,6 +34,11 @@ export default new Router({
     path: '/Login',
     name: 'Login',
     component: Login,
-  }
+  },
+  {
+    path: '/Update',
+    name: 'Update',
+    component: Update,
+  },
   ]
 })

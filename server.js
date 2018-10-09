@@ -1,3 +1,4 @@
+
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -119,6 +120,7 @@ app.post('/api/users/:id/posts', (req, res) => {
   knex('users').where('user_id',id).first().then(user => {
     return knex('posts').insert({user_id: id, post:req.body.post, dateCreated: new Date(), username: req.body.username});
   }).then(ids => { // might be post_ids
+    console.log("api/user/:id/posts  " + knex('posts').where('post_id',ids[0]));
     return knex('posts').where('post_id',ids[0]).first();
   }).then(post => {
     res.status(200).json({post:post});
@@ -159,7 +161,9 @@ app.get('/api/users/:id', (req, res) => {
 });
 
 app.get('/api/posts' , (req, res) => {
-  return knex('posts').select('post_id','post','dateCreated','user_id','username')
+  let ret = knex('posts').select('post_id','post','dateCreated','user_id','username');
+  console.log("return from posts " + knex('posts').select('post_id','post','dateCreated','user_id','username'));
+  return ret
     .then(posts => {
       //console.log(posts);
       res.status(200).json({posts:posts});

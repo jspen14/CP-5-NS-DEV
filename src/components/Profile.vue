@@ -17,6 +17,8 @@
         <li> <div class="bText"> What sports do you play: </div> {{user.sports}} </li>
         <li> <div class="bText"> What is your major: </div> {{user.major}} </li>
       </ul>
+        <router-link to="/Update"><button style="float:right" class="btn btn-danger"><i class="fa fa-sign-in"></i> Update</button></router-link>
+
       </div>
   </div>
 

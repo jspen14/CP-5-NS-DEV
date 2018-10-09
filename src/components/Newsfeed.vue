@@ -27,11 +27,14 @@
           </div>
       </div>
 
+      <br>
+      <h6 style="text-align: left"> **Posts delete after a week, so stay current! </h6>
 
 
       <div v-for="post in posts" style="text-align: left; word-wrap: break-word;">
               <hr>
           	  <h3><div style="text-align: left">{{ post.username }}: {{ post.post }}</div> <div></div></h3>
+
               <!--<h5> {{ post.dateCreated }} </h5>-->
               <!--
               <button type="button" class="btn btn-outline-primary" v-on:click ="addLike(comment)">Likes: {{comment.likes}}</button>
@@ -210,6 +213,7 @@ import axios from 'axios';
             mm = '0'+mm
           }
           if (minute<10) {
+
             minute = '0'+minute
           }
           today = hour + ":" + minute + " on " + mm + '-' + dd + '-' + yyyy;
